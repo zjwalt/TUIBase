@@ -1,0 +1,14 @@
+QueryEditor, QueryResults {
+  height: 1fr;
+  border: round #515151;
+  background: transparent;
+  padding: 1 1;
+}
+
+DbExplorer {
+  height: 1fr;
+  width: 25%;
+  border: round #515151;
+  background: transparent;
+  padding: 1 1;
+}
