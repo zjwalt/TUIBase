@@ -62,7 +62,7 @@ class DriverQueryError(DriverError):
 
 class DatabaseDriver(ABC):
     @abstractmethod
-    async def connect(self, ConnectionConfig) -> None:
+    async def connect(self, config: ConnectionConfig) -> None:
         """Establish Connection. Raise DriverConnectionError on failure."""
 
     @abstractmethod
