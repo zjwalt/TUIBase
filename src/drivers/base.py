@@ -20,7 +20,9 @@ class ColumnInfo:
     name: str
     data_type: str
     nullable: str
-    primary_key: bool
+    # primary_key: bool
+    ## TODO:
+    ## Add foreign key detection
     ## Think about Foreign Key relations
 
 

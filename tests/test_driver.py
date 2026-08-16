@@ -14,9 +14,11 @@ async def main():
     )
     await driver.connect(config)
     schema = await driver.list_schema()
+    tables = await driver.list_tables("public")
+    result = await driver.execute_query("SELECT * FROM players;")
     await driver.disconnect()
 
-    print(schema)
+    print(result)
 
 
 asyncio.run(main())
