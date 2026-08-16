@@ -4,6 +4,10 @@ from textual.containers import Horizontal, Vertical
 from widgets import DbExplorer, QueryEditor, QueryResults
 from drivers.postgres import PostgresDriver
 from drivers.base import ConnectionConfig
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class TUIBase(App):
@@ -14,13 +18,6 @@ class TUIBase(App):
     ]
 
     def compose(self) -> ComposeResult:
-        config = ConnectionConfig(
-            host="aws-1-us-east-1.pooler.supabase.com",
-            port=6543,
-            user="postgres.jfyphgxpdznacepykfkp",
-            password="haR9rlsU7v1dJS5d",
-            database="postgres",
-        )
         yield Header()
         with Horizontal(id="main"):
             with Vertical(classes="column"):
@@ -31,11 +28,11 @@ class TUIBase(App):
     async def on_mount(self) -> None:
         self.driver = PostgresDriver()
         config = ConnectionConfig(
-            host="aws-1-us-east-1.pooler.supabase.com",
-            port=6543,
-            user="postgres.jfyphgxpdznacepykfkp",
-            password="haR9rlsU7v1dJS5d",
-            database="postgres",
+            host=os.getenv("POSTGRES_HOST"),
+            port=os.getenv("POSTGRES_PORT"),
+            user=os.getenv("POSTGRES_USER"),
+            password=os.getenv("POSTGRES_PASSWORD"),
+            database=os.getenv("POSTGRES_DB"),
         )
         await self.driver.connect(config)
 
