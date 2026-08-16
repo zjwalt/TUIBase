@@ -4,6 +4,14 @@ from textual.widgets import Placeholder, Tree
 from drivers.postgres import PostgresDriver
 
 
+class VimTree(Tree):
+    BINDINGS = [
+        ("k", "cursor_up", "Up"),
+        ("j", "cursor_down", "Down"),
+        ("l", "select_cursor", "Select"),
+    ]
+
+
 class DbExplorer(Widget):
     BORDER_TITLE = "Database Explorer"
 
@@ -20,5 +28,5 @@ class DbExplorer(Widget):
                 node.add_leaf(f"{column.name}: {column.data_type}")
 
     def compose(self) -> ComposeResult:
-        yield Tree("Tables")
+        yield VimTree("Tables")
         # yield Placeholder("Database Tables & Schema")
