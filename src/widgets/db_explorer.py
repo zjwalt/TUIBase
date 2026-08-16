@@ -11,10 +11,14 @@ class DbExplorer(Widget):
         super().__init__()
         self.driver = driver
 
-    def compose(self) -> ComposeResult:
-        tree = Tree("Tables")
-        node = tree.root.add("players")
-        node.add_leaf("id: integer")
+    async def on_mount(self) -> None:
+        tree = self.query_one(Tree)
+        tables = await self.driver.list_tables("public")
+        for table in tables:
+            node = tree.root.add(table.name)
+            for column in table.columns:
+                node.add_leaf(f"{column.name}: {column.data_type}")
 
-        yield tree
+    def compose(self) -> ComposeResult:
+        yield Tree("Tables")
         # yield Placeholder("Database Tables & Schema")

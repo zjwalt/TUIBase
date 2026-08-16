@@ -18,7 +18,8 @@ async def main():
     result = await driver.execute_query("SELECT * FROM players;")
     await driver.disconnect()
 
-    print(result)
+    for i in tables:
+        print(i)
 
 
 asyncio.run(main())
