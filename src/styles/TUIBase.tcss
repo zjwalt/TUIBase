@@ -12,3 +12,7 @@ DbExplorer {
   background: transparent;
   padding: 1 1;
 }
+
+DbExplorer:focus-within, QueryEditor:focus-within, QueryResults:focus-within {
+  border: round #e3bdff;
+}
