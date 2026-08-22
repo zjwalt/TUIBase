@@ -16,3 +16,7 @@ DbExplorer {
 DbExplorer:focus-within, QueryEditor:focus-within, QueryResults:focus-within {
   border: round #e3bdff;
 }
+
+QueryEditor {
+  border-subtitle-align: left
+}
