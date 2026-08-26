@@ -39,6 +39,16 @@ class TUIBase(App):
         main = self.query_one("#main", Horizontal)
         await main.mount(DbExplorer(self.driver), before=0)
 
+    async def on_query_editor_submitted(self, message: QueryEditor.Submitted) -> None:
+        sql = message.sql
+
+        try:
+            results = await self.driver.execute_query(sql)
+            self.log("RESULTS:\n", results)
+        except Exception as ex:
+            results_pane = self.query_one(QueryResults)
+            results_pane.show_error(str(ex))
+
 
 if __name__ == "__main__":
     app = TUIBase()

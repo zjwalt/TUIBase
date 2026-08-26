@@ -1,6 +1,6 @@
 from textual.app import ComposeResult
 from textual.widget import Widget
-from textual.widgets import Placeholder, Tree
+from textual.widgets import Tree
 from drivers.postgres import PostgresDriver
 
 

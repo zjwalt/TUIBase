@@ -1,7 +1,6 @@
-from textual.app import ComposeResult
-from textual.widget import Widget
-from textual.widgets import Placeholder, TextArea
+from textual.widgets import TextArea
 from textual.reactive import reactive
+from textual.message import Message
 from textual import events
 from enum import Enum, auto
 import time
@@ -31,8 +30,6 @@ class QueryEditor(TextArea):
         "a": "enter_insert_append",
         "A": "append_to_end",
     }
-
-    INSERT_BINDINGS = {"jk": "enter_normal", "escape": "enter_normal"}
 
     JK_TIMEOUT = 0.25
 
@@ -92,18 +89,33 @@ class QueryEditor(TextArea):
         while not self.cursor_at_start_of_line:
             self.cursor_left()
 
+    def execute_query(self):
+        self.post_message(self.Submitted(self.text))
+
     def _on_key(self, event: events.Key) -> None:
+        now = time.monotonic()
         if self.mode == Mode.NORMAL:
+            if (
+                event.key == "enter"
+                and self._last_key == "space"
+                and (now - self._last_key_time) <= self.JK_TIMEOUT
+            ):
+                self.execute_query()
+                event.prevent_default()
+                event.stop()
+            else:
+                self._last_key = event.key
+                self._last_key_time = now
+
             action_name = self.NORMAL_BINDINGS.get(event.key)
             if action_name is not None:
                 method = getattr(self, action_name)
                 method()
+
             event.prevent_default()
             event.stop()
 
         elif self.mode == Mode.INSERT:
-            now = time.monotonic()
-
             if (
                 event.key == "k"
                 and self._last_key == "j"
@@ -120,3 +132,8 @@ class QueryEditor(TextArea):
 
     def watch_mode(self, mode: Mode) -> None:
         self.border_subtitle = f"-- {mode.name} --"
+
+    class Submitted(Message):
+        def __init__(self, sql: str) -> None:
+            self.sql = sql
+            super().__init__()
