@@ -25,8 +25,11 @@ class QueryEditor(TextArea):
         "k": "cursor_up",
         "l": "cursor_right",
         "i": "enter_insert",
+        "I": "insert_at_start",
         "o": "insert_new_line_below",
         "O": "insert_new_line_above",
+        "a": "enter_insert_append",
+        "A": "append_to_end",
     }
 
     INSERT_BINDINGS = {"jk": "enter_normal", "escape": "enter_normal"}
@@ -43,18 +46,28 @@ class QueryEditor(TextArea):
     def enter_insert(self):
         self.mode = Mode.INSERT
 
+    def insert_at_start(self):
+        self.move_to_line_start()
+        self.enter_insert()
+
+    def enter_insert_append(self):
+        self.cursor_right()
+        self.enter_insert()
+
+    def append_to_end(self):
+        self.move_to_line_end()
+        self.enter_insert()
+
     def enter_normal(self):
         self.mode = Mode.NORMAL
 
     def insert_new_line_below(self):
-        while not self.cursor_at_end_of_line:
-            self.cursor_right()
+        self.move_to_line_end()
         self.enter_insert()
         self.insert("\n")
 
     def insert_new_line_above(self):
-        while not self.cursor_at_start_of_line:
-            self.cursor_left()
+        self.move_to_line_start()
         self.enter_insert()
         self.insert("\n")
         self.cursor_up()
@@ -70,6 +83,14 @@ class QueryEditor(TextArea):
 
     def cursor_right(self):
         self.move_cursor(self.get_cursor_right_location())
+
+    def move_to_line_end(self):
+        while not self.cursor_at_end_of_line:
+            self.cursor_right()
+
+    def move_to_line_start(self):
+        while not self.cursor_at_start_of_line:
+            self.cursor_left()
 
     def _on_key(self, event: events.Key) -> None:
         if self.mode == Mode.NORMAL:
