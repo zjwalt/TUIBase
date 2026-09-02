@@ -5,7 +5,7 @@ from textual import events
 from enum import Enum, auto
 import time
 
-TEXT = ""
+TEXT = "SELECT * FROM players;"
 
 
 class Mode(Enum):
@@ -92,7 +92,7 @@ class QueryEditor(TextArea):
     def execute_query(self):
         self.post_message(self.Submitted(self.text))
 
-    def _on_key(self, event: events.Key) -> None:
+    async def _on_key(self, event: events.Key) -> None:
         now = time.monotonic()
         if self.mode == Mode.NORMAL:
             if (
@@ -107,13 +107,18 @@ class QueryEditor(TextArea):
                 self._last_key = event.key
                 self._last_key_time = now
 
+            if event.key == "q":
+                event.prevent_default()
+                event.stop()
+                await self.app.run_action("quit")
+                return
+
             action_name = self.NORMAL_BINDINGS.get(event.key)
+            event.prevent_default()
             if action_name is not None:
                 method = getattr(self, action_name)
                 method()
-
-            event.prevent_default()
-            event.stop()
+                event.stop()
 
         elif self.mode == Mode.INSERT:
             if (
@@ -132,6 +137,7 @@ class QueryEditor(TextArea):
 
     def watch_mode(self, mode: Mode) -> None:
         self.border_subtitle = f"-- {mode.name} --"
+        self.cursor_blink = mode == Mode.INSERT
 
     class Submitted(Message):
         def __init__(self, sql: str) -> None:

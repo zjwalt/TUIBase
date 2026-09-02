@@ -42,11 +42,13 @@ class TUIBase(App):
     async def on_query_editor_submitted(self, message: QueryEditor.Submitted) -> None:
         sql = message.sql
 
+        results_pane = self.query_one(QueryResults)
         try:
             results = await self.driver.execute_query(sql)
+            results_pane.show_results(tuple(results.columns), results.rows)
+
             self.log("RESULTS:\n", results)
         except Exception as ex:
-            results_pane = self.query_one(QueryResults)
             results_pane.show_error(str(ex))
 
 
